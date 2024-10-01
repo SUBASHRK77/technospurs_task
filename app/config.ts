@@ -1,8 +1,10 @@
-const config = {
+import { Config } from "@/types";
+
+const config: Config = {
     editable: true,
     name: {
         minLength: 3,
-        maxLength: 50
+        maxLength: 20
     }
 };
 

@@ -1,18 +1,20 @@
-import { useState } from 'react';
-import { User, Address } from '../types';
+import React, { useState } from 'react';
+import { User } from '../types';
 import "../app/pages.css"
 import axios from 'axios';
+import config from './config';
 
 interface UserFormProps {
     user: User | null;
     onClose: () => void;
+    fetch: () => void
 }
 
 const validateForm = (userData: User) => {
     const errors: Partial<User> = {};
 
-    if (!userData.name || userData.name.length < 3 || userData.name.length > 50) {
-        errors.name = 'Name should be between 3 and 50 characters';
+    if (!userData.name || userData.name.length < 3 || userData.name.length > 20) {
+        errors.name = 'Name should be between 3 and 20 characters';
     }
     if (!userData.email || !/\S+@\S+\.\S+/.test(userData.email)) {
         errors.email = 'Valid email is required';
@@ -27,14 +29,14 @@ const validateForm = (userData: User) => {
     return errors;
 };
 
-export default function UserForm({ user, onClose }: UserFormProps) {
+export default function UserForm({ user, onClose, fetch }: UserFormProps) {
     const [userData, setUserData] = useState<User>(
         user || {
             id: 0,
             key: "",
             name: '',
             email: '',
-            linkedin: '',
+            linkedin: "https://www.linkedin.com/in/johndoe/",
             gender: '',
             address: {
                 line1: '',
@@ -49,33 +51,37 @@ export default function UserForm({ user, onClose }: UserFormProps) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formErrors = validateForm(userData);
-        if (Object.keys(formErrors).length > 0) {
-            try {
-                let Payload = {
-                    ...userData,
-                    address: {
-                        line1: userData.address.line1,
-                        state: userData.address.state,
-                        city: userData.address.city,
-                        pin: userData.address.pin
-                    }
+        // if (Object.keys(formErrors).length > 0) {
+        try {
+            let Payload = {
+                ...userData,
+                address: {
+                    line1: userData.address.line1,
+                    state: userData.address.state,
+                    city: userData.address.city,
+                    pin: userData.address.pin
                 }
-                if (userData.id?.length > 0) {
-                    axios.put(`https://66fad8b5858383ac93b40a2401.mockapi.io/api/v1/linkedin-profile/linkedin-profile/${userData.id}`);
-                    onClose();
-                }
-                else {
-                    axios.post('https://66fad8b58583ac93b40a2401.mockapi.io/api/v1/linkedin-profile/linkedin-profile', Payload)
-                    onClose();
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
             }
-            setErrors(formErrors);
-        } else {
-            onClose();
+            if (userData.id?.length > 0) {
+                axios.put(`https://66fad8b5858383ac93b40a2401.mockapi.io/api/v1/linkedin-profile/linkedin-profile/${userData.id}`);
+                onClose();
+            }
+            else {
+                axios.post('https://66fad8b58583ac93b40a2401.mockapi.io/api/v1/linkedin-profile/linkedin-profile', Payload)
+                fetch()
+                onClose();
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
+        setErrors(formErrors);
+        // }
     };
+
+
+
+
+
 
     const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedState = e.target.value;
@@ -96,8 +102,6 @@ export default function UserForm({ user, onClose }: UserFormProps) {
         'New York': ['New York City', 'Buffalo', 'Rochester'],
     };
 
-    console.log(userData.gender, 'pay select');
-
     return (
         <form onSubmit={handleSubmit} className='form-container'>
             <div className='form-control'>
@@ -107,6 +111,8 @@ export default function UserForm({ user, onClose }: UserFormProps) {
                     type="text"
                     value={userData.name}
                     onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                    minLength={config.name.minLength}
+                    maxLength={config.name.maxLength}
                 />
                 {errors.name && <span>{errors.name}</span>}
             </div>

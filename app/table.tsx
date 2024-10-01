@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import React, { useState } from "react";
 import UserForm from './UserForm';
 import { User, Config, Address } from '../types';
 import "../app/pages.css"
@@ -25,7 +25,7 @@ export default function UserTable({ users, config, fetch }: UserTableProps) {
     };
 
     const toggleRow = (index: number) => {
-        setExpandedRows(expandedRows.includes(index) ? expandedRows.filter(row => row !== index) : [...expandedRows, index]);
+        setExpandedRows(expandedRows.includes(index) ? expandedRows.filter((row: any) => row !== index) : [...expandedRows, index]);
     };
 
     const handleEdit = async (user: User) => {
@@ -110,29 +110,37 @@ export default function UserTable({ users, config, fetch }: UserTableProps) {
             key: 'actions',
             align: 'center' as const,
             width: "20%",
-            render: (_: any, user: User) => (
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                    <button className='cancel-button'
-                        style={{
-                            background: "#00a8ff",
-                            color: "#fff",
-                            fontSize: "15px",
-                            height: "35px",
-                            width: "107px",
-                            fontWeight: 600
-                        }} onClick={() => handleEdit(user)}>Edit</button>
-                    <button className='cancel-button'
-                        style={{
-                            color: "#fff",
-                            fontSize: "15px",
-                            height: "35px",
-                            width: "107px",
-                            fontWeight: 600
-                        }} onClick={() => handleDelete(user)}>Delete</button>
-                </div>
-            ),
-        },
+            render: (_: any, user: User) => {
+                return (
+                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                        <button className='cancel-button'
+                            style={{
+                                background: "#00a8ff",
+                                color: "#fff",
+                                fontSize: "15px",
+                                height: "35px",
+                                width: "107px",
+                                fontWeight: 600
+                            }}
+                            onClick={() => handleEdit(user)}>Edit
+                        </button>
+                        <button className='cancel-button'
+                            style={{
+                                color: "#fff",
+                                fontSize: "15px",
+                                height: "35px",
+                                width: "107px",
+                                fontWeight: 600
+                            }}
+                            onClick={() => handleDelete(user)}>Delete
+                        </button>
+                    </div>
+                );
+            },
+            hidden: !config.editable
+        }
     ];
+
 
     return (
         <div>
@@ -155,70 +163,93 @@ export default function UserTable({ users, config, fetch }: UserTableProps) {
                     <Modal open={isFormOpen} onCancel={() => setIsFormOpen(false)} footer={[]}>
                         <UserForm
                             user={editingUser}
+                            fetch={() => fetch()}
                             onClose={() => {
                                 setIsFormOpen(false);
                                 setEditingUser(null);
-                                fetch()
                             }
                             }
                         />
                     </Modal>
                 )}
 
-            {/* <table>
-                <thead>
-                    <tr>
-                        <th>Name </th>
-                        < th > Email </th>
-                        < th > LinkedIn URL </th>
-                        < th > Gender </th>
-                        < th > Address </th>
-                        < th > Edit </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        users?.map((user, index) => (
-                            <tr key={user.email} >
-                                <td>{user.name} </td>
-                                < td > {user.email} </td>
-                                < td > {user.linkedin} </td>
-                                < td > {user.gender} </td>
-                                < td >
-                                    <button onClick={() => toggleRow(index)}> Expand </button>
-                                    {
-                                        expandedRows.includes(index) && (
-                                            <div>
-                                                <p>{user.address.line1} </p>
-                                                < p > {user.address.city}, {user.address.state}, {user.address.pin} </p>
-                                            </div>
-                                        )
-                                    }
-                                </td>
-                                <td>
-                                    {
-                                        config.editable && (
-                                            <>
-                                                <button onClick={() => handleEdit(user)}> Edit </button>
-                                                < button onClick={() => handleDelete(user)
-                                                }> Delete </button>
-                                            </>
-                                        )}
-                                </td>
-                            </tr>
-                        ))}
-                </tbody>
-            </table> */}
+
             <Row align={'middle'} style={{ padding: "2px 63px" }}>
                 <Col xs={12} md={24} lg={24} >
                     <Table columns={columns} dataSource={users} expandable={{
-                        expandedRowRender: (record) => (
+                        expandedRowRender: (record: any) => (
                             <p style={{ margin: 0 }}>{renderAddress(record.address)}</p>
                         ),
-                        rowExpandable: (record) => record.name !== 'Not Expandable',
+                        rowExpandable: (record: any) => record.name !== 'Not Expandable',
                         onExpand,
                         expandedRowKeys,
                     }} />;
+                    {/* <table>
+                        <thead>
+                            <tr>
+                                <th>Name </th>
+                                < th > Email </th>
+                                < th > LinkedIn URL </th>
+                                < th > Gender </th>
+                                < th > Address </th>
+                                < th > Edit </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                users?.map((user, index) => (
+                                    <tr key={user.email} >
+                                        <td>{user.name} </td>
+                                        < td > {user.email} </td>
+                                        < td > {user.linkedin} </td>
+                                        < td > {user.gender} </td>
+                                        < td >
+                                            <button className='cancel-button'
+                                                style={{
+                                                    background: "#dcdde1",
+                                                    color: "#000",
+                                                    fontSize: "15px",
+                                                    height: "35px",
+                                                    width: "107px",
+                                                    fontWeight: 600
+                                                }} onClick={() => toggleRow(index)}>Expand</button>
+                                            {
+                                                expandedRows.includes(index) && (
+                                                    <div>
+                                                        <p>{user.address.line1} </p>
+                                                        < p > {user.address.city}, {user.address.state}, {user.address.pin} </p>
+                                                    </div>
+                                                )
+                                            }
+                                        </td>
+                                        <td>
+                                            {
+                                                config.editable && (
+                                                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                                                        <button className='cancel-button'
+                                                            style={{
+                                                                background: "#00a8ff",
+                                                                color: "#fff",
+                                                                fontSize: "15px",
+                                                                height: "35px",
+                                                                width: "107px",
+                                                                fontWeight: 600
+                                                            }} onClick={() => handleEdit(user)}>Edit</button>
+                                                        <button className='cancel-button'
+                                                            style={{
+                                                                color: "#fff",
+                                                                fontSize: "15px",
+                                                                height: "35px",
+                                                                width: "107px",
+                                                                fontWeight: 600
+                                                            }} onClick={() => handleDelete(user)}>Delete</button>
+                                                    </div>
+                                                )}
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table> */}
                 </Col>
             </Row>
         </div>

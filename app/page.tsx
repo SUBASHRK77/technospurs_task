@@ -1,17 +1,11 @@
 "use client"
 import UserTable from "./table";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import config from "./config";
 
 export default function TableForm() {
   const [data, setData] = useState<any>(null);
-  const config = {
-    editable: true,
-    name: {
-      minLength: 3,
-      maxLength: 50
-    }
-  };
 
   function generateObjectId() {
     const timestamp = (Math.floor(Date.now() / 1000)).toString(16);
