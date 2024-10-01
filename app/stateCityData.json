@@ -1,0 +1,17 @@
+{
+    "California": [
+        "Los Angeles",
+        "San Francisco",
+        "San Diego"
+    ],
+    "Texas": [
+        "Houston",
+        "Dallas",
+        "Austin"
+    ],
+    "New York": [
+        "New York City",
+        "Buffalo",
+        "Rochester"
+    ]
+}
